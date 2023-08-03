@@ -4,7 +4,7 @@ let activeEffect: any
 class ReactiveEffect {
   private _fn: any
 
-  constructor(fn: any) {
+  constructor(fn: any, public scheduler?: any) {
     this._fn = fn
   }
 
@@ -14,8 +14,8 @@ class ReactiveEffect {
   }
 }
 
-export function effect(fn: any) {
-  const _effect = new ReactiveEffect(fn)
+export function effect(fn: any, options: any = {}) {
+  const _effect = new ReactiveEffect(fn, options.scheduler)
 
   _effect.run()
 
@@ -43,6 +43,10 @@ export function trigger(target: any, key: any) {
   const depMaps = targetMaps.get(target)
   const dep = depMaps.get(key)
 
-  for (const effect of dep)
-    effect.run()
+  for (const effect of dep) {
+    if (effect.scheduler)
+      effect.scheduler()
+    else
+      effect.run()
+  }
 }
