@@ -4,9 +4,19 @@ const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
 
+export enum ReactiveFlags {
+  IS_REACTIVE = '__v_isReactive',
+  IS_READONLY = '__v_isReadonly',
+}
+
 export function createGetter(isReadonly = false) {
   return function (target: any, key: any) {
     const res = Reflect.get(target, key)
+
+    if (key === ReactiveFlags.IS_REACTIVE)
+      return !isReadonly
+    if (key === ReactiveFlags.IS_READONLY)
+      return isReadonly
 
     // 依赖收集
     if (!isReadonly)
