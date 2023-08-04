@@ -3,6 +3,7 @@
 import { extend } from '../shared'
 
 let activeEffect: any
+let shouldTrack = false // 控制 stop 操作后 trigger 里 run 的运行
 class ReactiveEffect {
   [x: string]: any
   private _fn: any
@@ -14,8 +15,16 @@ class ReactiveEffect {
   }
 
   run() {
+    if (!this.active)
+      return this._fn()
+
+    shouldTrack = true
     activeEffect = this
-    return this._fn()
+
+    const res = this._fn() // 这里运行后会触发 get 操作
+    shouldTrack = false
+
+    return res
   }
 
   stop() {
@@ -47,6 +56,10 @@ export function effect(fn: any, options: any = {}) {
 
 const targetMaps = new Map()
 export function track(target: any, key: any) {
+  // 提取不需要 track 的情况
+  if (!isTracking())
+    return
+
   let depMaps = targetMaps.get(target)
   if (!depMaps) {
     depMaps = new Map()
@@ -59,11 +72,14 @@ export function track(target: any, key: any) {
     depMaps.set(key, dep)
   }
 
-  if (!activeEffect)
+  if (dep.has(activeEffect))
     return
-
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
+}
+
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined
 }
 
 export function trigger(target: any, key: any) {

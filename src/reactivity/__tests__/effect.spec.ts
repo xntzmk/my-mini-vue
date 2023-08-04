@@ -68,11 +68,13 @@ describe('effect', () => {
     const runner = effect(() => {
       dummy = obj.prop
     })
+
     obj.prop = 2
     expect(dummy).toBe(2)
+
     stop(runner)
-    obj.prop = 3
-    // obj.prop++
+    // obj.prop = 3 // 只触发 get 操作
+    obj.prop++ // 触发 get 和 set 操作（effect.run 再次触发依赖）
     expect(dummy).toBe(2)
 
     // stopped effect should still be manually callable
