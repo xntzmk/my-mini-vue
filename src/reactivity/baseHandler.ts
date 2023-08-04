@@ -1,4 +1,6 @@
+import { isObject } from '../shared'
 import { track, trigger } from './effect'
+import { reactive, readonly } from './reactive'
 
 const get = createGetter()
 const set = createSetter()
@@ -17,6 +19,10 @@ export function createGetter(isReadonly = false) {
       return !isReadonly
     if (key === ReactiveFlags.IS_READONLY)
       return isReadonly
+
+    // res 为对象，再次添加代理
+    if (isObject(res))
+      return isReadonly ? readonly(res) : reactive(res)
 
     // 依赖收集
     if (!isReadonly)
