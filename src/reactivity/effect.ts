@@ -4,7 +4,7 @@ import { extend } from '../shared'
 
 let activeEffect: any
 let shouldTrack = false // 控制 stop 操作后 trigger 里 run 的运行
-class ReactiveEffect {
+export class ReactiveEffect {
   [x: string]: any
   private _fn: any
   deps = []
