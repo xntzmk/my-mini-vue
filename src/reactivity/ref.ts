@@ -52,3 +52,18 @@ export function isRef(raw: any) {
 export function unRef(raw: any) {
   return isRef(raw) ? raw.value : raw
 }
+
+export function proxyRefs(objectWithRefs: any) {
+  return new Proxy(objectWithRefs, {
+    get(target, key) {
+      return unRef(Reflect.get(target, key))// 直接对返回值进行 unRef 操作
+    },
+
+    set(target, key, value) {
+      if (isRef(target[key]) && !isRef(value))
+        return Reflect.set(target[key], 'value', value)
+      else
+        return Reflect.set(target, key, value)
+    },
+  })
+}
