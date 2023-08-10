@@ -1,9 +1,10 @@
-import { isObject } from '../shared'
+import { isObject } from '../shared/index'
 
 export function createComponentInstance(vnode: any) {
   const component = {
     vnode,
     type: vnode.type,
+    setupState: {},
   }
 
   return component
@@ -18,8 +19,19 @@ export function setupComponent(instance: any) {
 
 function setupStatefulComponent(instance: any) {
   const component = instance.type
-  const { setup } = component
 
+  // ctx
+  instance.proxy = new Proxy(
+    {},
+    {
+      get(target, key) {
+        const { setupState } = instance
+        if (key in setupState)
+          return setupState[key]
+      },
+    })
+
+  const { setup } = component
   // 用户可能不写 setup
   if (setup) {
     const setupResult = setup()

@@ -10,18 +10,18 @@ export const App = {
       },
 
       // string
-      // 'hello world',
+      `hello world${this.msg}`,
       // array
-      [
-        h('p', { class: 'yellow' }, 'aaa'),
-        h('span', { class: 'orange' }, 'bbb'),
-      ],
+      // [
+      //   h('p', { class: 'yellow' }, 'aaa'),
+      //   h('span', { class: 'orange' }, 'bbb'),
+      // ],
     )
   },
 
   setup() {
     return {
-      msg: 'aaa',
+      msg: '你好aa',
     }
   },
 }
