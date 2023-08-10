@@ -1,17 +1,23 @@
 {
   "name": "my-mini-vue",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "lib/my-mini-vue.cjs.js",
+  "module": "lib/my-mini-vue.esm.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "build": "rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.40.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-typescript": "^11.1.2",
     "eslint": "^8.46.0",
+    "rollup": "^3.28.0",
     "typescript": "^5.1.6",
     "vitest": "^0.34.1"
   }

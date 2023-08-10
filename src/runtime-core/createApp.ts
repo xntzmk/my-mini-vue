@@ -9,7 +9,14 @@ export function createApp(rootComponent: any) {
       const vnode = createVNode(rootComponent)
 
       // 进行 render 操作
-      render(vnode, rootContainer)
+      render(vnode, transformRootContainer(rootContainer))
     },
   }
+}
+
+function transformRootContainer(rootContainer: any) {
+  if (typeof rootContainer === 'string')
+    return document.querySelector(rootContainer)
+
+  return rootContainer
 }
