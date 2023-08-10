@@ -8,7 +8,15 @@ export const App = {
         id: 'info',
         class: ['red', 'green'],
       },
-      'hello world')
+
+      // string
+      // 'hello world',
+      // array
+      [
+        h('p', { class: 'yellow' }, 'aaa'),
+        h('span', { class: 'orange' }, 'bbb'),
+      ],
+    )
   },
 
   setup() {
