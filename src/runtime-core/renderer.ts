@@ -19,8 +19,9 @@ function processElement(vnode: any, container: any) {
 }
 
 function mountElement(vnode: any, container: any) {
+  // vnode -> element -> div
   const { type, props, children } = vnode
-  const el: HTMLElement = document.createElement(type)
+  const el: HTMLElement = (vnode.el = document.createElement(type)) // 存储 $el
 
   // children: Array / String
   if (typeof children === 'string')
@@ -45,22 +46,22 @@ function processComponent(vnode: any, container: any) {
   mountComponent(vnode, container)
 }
 
-function mountComponent(vnode: any, container: any) {
+function mountComponent(initialVNode: any, container: any) {
   // 根据 vnode 创建组件实例
-  const instance = createComponentInstance(vnode)
+  const instance = createComponentInstance(initialVNode)
 
   // 初始化组件实例
   setupComponent(instance)
   // 进行 render
-  setupRenderEffect(instance, container)
+  setupRenderEffect(instance, initialVNode, container)
 }
 
-function setupRenderEffect(instance: any, container: any) {
+function setupRenderEffect(instance: any, initialVNode: any, container: any) {
   const { proxy } = instance
   const subTree = instance.render.apply(proxy)
 
   // vnode -> patch
-  // vnode -> element -> patch
-
   patch(subTree, container)
+  // vnode -> element -> patch
+  initialVNode.el = subTree.el // 在所有的 subTree 初始化完成后，赋值 $el
 }
