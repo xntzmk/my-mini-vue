@@ -9,6 +9,12 @@ export const App = {
       {
         id: 'info',
         class: ['red', 'green'],
+        onClick() {
+          console.log('134')
+        },
+        onMouseover() {
+          console.log('over')
+        },
       },
 
       // string

@@ -31,8 +31,16 @@ function mountElement(vnode: any, container: any) {
     mountChildren(vnode, el)
 
   // props
-  for (const key in props)
-    el.setAttribute(key, props[key])
+  const isOn = (key: string) => /^on[A-Z]/.test(key)
+  for (const key in props) {
+    const val = props[key]
+    if (isOn(key)) {
+      // 绑定dom事件
+      const event = key.slice(2).toLocaleLowerCase()
+      el.addEventListener(event, val)
+    }
+    else { el.setAttribute(key, val) }
+  }
 
   container.append(el)
 }
