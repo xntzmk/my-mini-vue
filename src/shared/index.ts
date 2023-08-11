@@ -11,3 +11,15 @@ export function hasChanged(val: any, newVal: any) {
 export function hasOwn(target: object, key: string | symbol) {
   return Object.prototype.hasOwnProperty.call(target, key)
 }
+
+export function camelize(str: string) {
+  return str.replace(/-(\w)/, (_, c: string) => c ? c.toLocaleUpperCase() : '')
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toLocaleUpperCase() + str.slice(1)
+}
+
+export function toHandlerKey(str: string) {
+  return str ? `on${capitalize(str)}` : ''
+}

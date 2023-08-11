@@ -8,20 +8,22 @@ export const App = {
     window.self = this
     return h(
       'div',
-      {
-        id: 'info',
-        class: ['red', 'green'],
-        onClick() {
-          console.log('134')
-        },
-        onMouseover() {
-          console.log('over')
-        },
-
-      },
+      {},
       [
         h('span', { class: 'orange' }, 'bbb'),
-        h(Foo, { name: '我是foo的props' }),
+        h(
+          Foo,
+          {
+            name: '我是foo的props',
+            onAdd(a, b) {
+              console.log('App onAdd', a, b)
+            },
+            onAddFoo(a, b) {
+              console.log('App onAddFoo', a, b)
+            },
+
+          },
+        ),
       ],
     )
   },
