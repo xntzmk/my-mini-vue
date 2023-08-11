@@ -10,7 +10,8 @@ export const App = {
 
     // 传入 slots: array / vnode
     // const foo = h(Foo, {}, header)
-    const foo = h(Foo, {}, [header, footer])
+    // const foo = h(Foo, {}, [header, footer])
+    const foo = h(Foo, {}, { header, footer })
     return h('div', {}, [app, foo])
   },
 

@@ -5,7 +5,16 @@ export const Foo = {
     return {}
   },
   render() {
+    console.log(this.$slots)
     const foo = h('p', { class: 'orange' }, 'foo')
-    return h('div', {}, [foo, renderSlots(this.$slots)])
+    return h(
+      'div',
+      {},
+      // 具名插槽
+      [
+        renderSlots(this.$slots, 'header'),
+        foo,
+        renderSlots(this.$slots, 'footer'),
+      ])
   },
 }
