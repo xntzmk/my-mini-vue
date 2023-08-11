@@ -1,4 +1,5 @@
 import { h } from '../../lib/my-mini-vue.esm.js'
+import { Foo } from './Foo.js'
 
 window.self = null
 export const App = {
@@ -18,12 +19,13 @@ export const App = {
       },
 
       // string
-      `hello world${this.msg}`,
+      // `hello world${this.msg}`,
       // array
-      // [
-      //   h('p', { class: 'yellow' }, 'aaa'),
-      //   h('span', { class: 'orange' }, 'bbb'),
-      // ],
+      [
+        // h('p', { class: 'yellow' }, 'aaa'),
+        h('span', { class: 'orange' }, 'bbb'),
+        h(Foo, { name: '我是foo的props' }),
+      ],
     )
   },
 

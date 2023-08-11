@@ -1,3 +1,4 @@
+import { isObject } from '../shared/index'
 import { ReactiveFlags, mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './baseHandler'
 
 export function reactive(raw: any) {
@@ -25,5 +26,10 @@ export function isProxy(raw: any) {
 }
 
 function createActiveObject(raw: any, baseHandlers: any) {
+  if (!isObject(raw)) {
+    console.warn(`target ${raw} 不是对象类型`)
+    return raw
+  }
+
   return new Proxy(raw, baseHandlers)
 }
