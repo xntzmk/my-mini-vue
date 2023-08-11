@@ -12,7 +12,7 @@ export const Foo = {
       {},
       // 具名插槽
       [
-        renderSlots(this.$slots, 'header'),
+        renderSlots(this.$slots, 'header', { age: 18, name: 'aaa' }),
         foo,
         renderSlots(this.$slots, 'footer'),
       ])

@@ -1,7 +1,11 @@
 import { h } from '../h'
 
-export function renderSlots(slots: any, slotsName: string) {
+export function renderSlots(slots: any, slotsName: string, props: any) {
   const slot = slots[slotsName]
-  if (slot)
-    return h('div', {}, slot)
+
+  // 作用域插槽: 子组件传入props, 父组件的slot需要用函数调用
+  if (slot) {
+    if (typeof slot === 'function')
+      return h('div', {}, slot(props))
+  }
 }

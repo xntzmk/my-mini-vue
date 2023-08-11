@@ -5,8 +5,8 @@ export const App = {
   name: 'App',
   render() {
     const app = h('div', { class: 'blue' }, 'app')
-    const header = h('header', { class: 'red' }, '我是header')
-    const footer = h('footer', { class: 'green' }, '我是footer')
+    const header = props => h('header', { class: 'red' }, `我是header: ${props.name}`)
+    const footer = props => h('footer', { class: 'green' }, `我是footer: ${props}`)
 
     // 传入 slots: array / vnode
     // const foo = h(Foo, {}, header)
