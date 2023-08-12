@@ -6,14 +6,13 @@ import { PublicInstanceProxyHandlers } from './componentPublicInstance'
 import { initSlots } from './componentSlots'
 
 export function createComponentInstance(vnode: any, parent: any) {
-  console.log('333', parent)
   const component = {
     vnode,
     type: vnode.type,
-    setupState: {},
+    setupState: {}, // 存储 setup 函数的返回值
     props: {},
     slots: {},
-    provides: {},
+    provides: parent ? parent.provides : {}, // 先赋值为父级的 provides, 方便初始化原型时进行判断
     parent,
     emit: () => ({}),
   }
