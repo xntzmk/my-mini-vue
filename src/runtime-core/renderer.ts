@@ -1,6 +1,6 @@
 import { ShapeFlags } from '../shared/shapeFlags'
 import { createComponentInstance, setupComponent } from './component'
-import { Fragment } from './vnode'
+import { Fragment, Text } from './vnode'
 
 export function render(vnode: any, container: any) {
   // render 里只做 patch
@@ -13,7 +13,9 @@ function patch(vnode: any, container: any) {
   switch (type) {
     case Fragment:
       processFragment(vnode, container)
-
+      break
+    case Text:
+      processText(vnode, container)
       break
 
     default:
@@ -23,6 +25,12 @@ function patch(vnode: any, container: any) {
         processComponent(vnode, container)
       break
   }
+}
+
+function processText(vnode: any, container: any) {
+  const { children } = vnode
+  const textNode = (vnode.el = document.createTextNode(children))
+  container.append(textNode)
 }
 
 // fragment 不需要进行其 vnode 处理, 只需要渲染/处理 children (替换掉了 container)

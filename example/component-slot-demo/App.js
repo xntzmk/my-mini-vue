@@ -1,11 +1,11 @@
-import { h } from '../../lib/my-mini-vue.esm.js'
+import { createTextVNode, h } from '../../lib/my-mini-vue.esm.js'
 import { Foo } from './Foo.js'
 
 export const App = {
   name: 'App',
   render() {
     const app = h('div', { class: 'blue' }, 'app')
-    const header = props => h('header', { class: 'red' }, `我是header: ${props.name}`)
+    const header = props => [h('header', { class: 'red' }, `我是header: ${props.name}`), createTextVNode('我是文本节点')]
     const footer = props => h('footer', { class: 'green' }, `我是footer: ${props}`)
 
     // 传入 slots: array / vnode
