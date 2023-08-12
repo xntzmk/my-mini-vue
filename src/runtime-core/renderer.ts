@@ -1,5 +1,6 @@
 import { ShapeFlags } from '../shared/shapeFlags'
 import { createComponentInstance, setupComponent } from './component'
+import { Fragment } from './vnode'
 
 export function render(vnode: any, container: any) {
   // render 里只做 patch
@@ -8,11 +9,25 @@ export function render(vnode: any, container: any) {
 
 // 根据 vnode 的类型进行 组件/元素 的处理
 function patch(vnode: any, container: any) {
-  const { shapeFlag } = vnode
-  if (shapeFlag & ShapeFlags.ELEMENT)
-    processElement(vnode, container)
-  else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
-    processComponent(vnode, container)
+  const { shapeFlag, type } = vnode
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+
+      break
+
+    default:
+      if (shapeFlag & ShapeFlags.ELEMENT)
+        processElement(vnode, container)
+      else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
+        processComponent(vnode, container)
+      break
+  }
+}
+
+// fragment 不需要进行其 vnode 处理, 只需要渲染/处理 children (替换掉了 container)
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container)
 }
 
 function processElement(vnode: any, container: any) {
