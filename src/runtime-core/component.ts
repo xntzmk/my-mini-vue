@@ -1,4 +1,5 @@
 import { shallowReadonly } from '../reactivity/reactive'
+import { proxyRefs } from '../reactivity/ref'
 import { isObject } from '../shared/index'
 import { emit } from './componentEmits'
 import { initProps } from './componentProps'
@@ -14,6 +15,8 @@ export function createComponentInstance(vnode: any, parent: any) {
     slots: {},
     provides: parent ? parent.provides : {}, // 先赋值为父级的 provides, 方便初始化原型时进行判断
     parent,
+    subTree: {}, // 存储上一次的虚拟树
+    isMounted: false,
     emit: () => ({}),
   }
 
@@ -55,7 +58,7 @@ function setupStatefulComponent(instance: any) {
 function handleSetupResult(instance: any, setupResult: any) {
   // function object
   if (isObject(setupResult))
-    instance.setupState = setupResult
+    instance.setupState = proxyRefs(setupResult) // render 解析 ref.value
 
   // 保证组件的 render 一定有值
   finishComponentSetup(instance)
