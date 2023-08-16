@@ -4,15 +4,18 @@ function createElement(type: any) {
   return document.createElement(type)
 }
 
-function patchProp(el: any, key: any, value: any) {
+function patchProp(el: any, key: any, prevValue: any, nextValue: any) {
   const isOn = (key: string) => /^on[A-Z]/.test(key)
   if (isOn(key)) {
     // 绑定dom事件
     const event = key.slice(2).toLocaleLowerCase()
-    el.addEventListener(event, value)
+    el.addEventListener(event, nextValue)
   }
   else {
-    el.setAttribute(key, value)
+    if (nextValue === undefined || nextValue === null)
+      el.removeAttribute(key)
+    else
+      el.setAttribute(key, nextValue)
   }
 }
 
