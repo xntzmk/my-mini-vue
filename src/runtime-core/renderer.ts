@@ -142,11 +142,63 @@ export function createRenderer(options: any) {
         }
       }
     }
+
     /** 新的比老的短 */
     else if (i > e2) {
       while (i <= e1) {
         hostRemove(c1[i].el)
         i++
+      }
+    }
+
+    /** 中间对比 */
+    else {
+      const s1 = i
+      const s2 = i
+
+      // 针对删除逻辑的优化 (新比老的少且多余部分可以直接删除的情况)
+      const toBePatched = e2 - i + 1 // 记录应该 patch 的数量
+      let patched = 0 // 记录已经 patch 的数量
+
+      // 建立新树中间部分的映射，基于 key 进行对比索引位置
+      const keyToNewIndexMap = new Map()
+      for (let i = s2; i <= e2; i++) {
+        const nextChild = c2[i]
+        keyToNewIndexMap.set(nextChild.key, i)
+      }
+
+      for (let i = s1; i <= e1; i++) {
+        const prevChild = c1[i]
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el)
+          continue
+        }
+
+        // 有 key (key!==null & key!==undefined) -> 查找 map
+        let newIndex
+        if (prevChild.key != null) {
+          newIndex = keyToNewIndexMap.get(prevChild.key)
+        }
+        // 无 key -> 遍历中间乱序部分
+        else {
+          for (let j = s2; j <= e2; j++) {
+            const nextChild = c2[j]
+            if (isSameVNodeType(prevChild, nextChild)) {
+              newIndex = j
+              break
+            }
+          }
+        }
+
+        // 不存在
+        if (newIndex === undefined) {
+          hostRemove(prevChild.el)
+        }
+        // 存在
+        else {
+          patch(prevChild, c2[newIndex], container, parentComponent, null)
+          patched++
+        }
       }
     }
   }
