@@ -7,31 +7,31 @@ import { h, ref } from '../../lib/my-mini-vue.esm.js'
 // (a b) c
 // (a b) d e
 // const prevChildren = [
-//   h("p", { key: "A" }, "A"),
-//   h("p", { key: "B" }, "B"),
-//   h("p", { key: "C" }, "C"),
-// ];
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'C' }, 'C'),
+// ]
 // const nextChildren = [
-//   h("p", { key: "A" }, "A"),
-//   h("p", { key: "B" }, "B"),
-//   h("p", { key: "D" }, "D"),
-//   h("p", { key: "E" }, "E"),
-// ];
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'D' }, 'D'),
+//   h('p', { key: 'E' }, 'E'),
+// ]
 
 // 2. 右侧的对比
 // a (b c)
 // d e (b c)
-// const prevChildren = [
-//   h("p", { key: "A" }, "A"),
-//   h("p", { key: "B" }, "B"),
-//   h("p", { key: "C" }, "C"),
-// ];
-// const nextChildren = [
-//   h("p", { key: "D" }, "D"),
-//   h("p", { key: "E" }, "E"),
-//   h("p", { key: "B" }, "B"),
-//   h("p", { key: "C" }, "C"),
-// ];
+const prevChildren = [
+  h('p', { key: 'A' }, 'A'),
+  h('p', { key: 'B' }, 'B'),
+  h('p', { key: 'C' }, 'C'),
+]
+const nextChildren = [
+  h('p', { key: 'D' }, 'D'),
+  h('p', { key: 'E' }, 'E'),
+  h('p', { key: 'B' }, 'B'),
+  h('p', { key: 'C' }, 'C'),
+]
 
 // 3. 新的比老的长
 //     创建新的
@@ -209,19 +209,19 @@ import { h, ref } from '../../lib/my-mini-vue.esm.js'
 // ];
 
 // fix c 节点应该是 move 而不是删除之后重新创建的
-const prevChildren = [
-  h('p', { key: 'A' }, 'A'),
-  h('p', {}, 'C'),
-  h('p', { key: 'B' }, 'B'),
-  h('p', { key: 'D' }, 'D'),
-]
+// const prevChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', {}, 'C'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', { key: 'D' }, 'D'),
+// ]
 
-const nextChildren = [
-  h('p', { key: 'A' }, 'A'),
-  h('p', { key: 'B' }, 'B'),
-  h('p', {}, 'C'),
-  h('p', { key: 'D' }, 'D'),
-]
+// const nextChildren = [
+//   h('p', { key: 'A' }, 'A'),
+//   h('p', { key: 'B' }, 'B'),
+//   h('p', {}, 'C'),
+//   h('p', { key: 'D' }, 'D'),
+// ]
 
 export default {
   name: 'ArrayToArray',
