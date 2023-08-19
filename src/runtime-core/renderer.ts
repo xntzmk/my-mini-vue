@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-new-array */
 import { effect } from '../reactivity/effect'
 import { EMPTY_OBJ } from '../shared'
 import { ShapeFlags } from '../shared/shapeFlags'
@@ -167,6 +168,15 @@ export function createRenderer(options: any) {
         keyToNewIndexMap.set(nextChild.key, i)
       }
 
+      let moved = false
+      let maxNewIndexSoFar = 0
+
+      // 初始化 从新的index映射为老的index
+      // 创建数组的时候给定数组的长度，这个是性能最快的写法
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      for (let i = 0; i < toBePatched; i++)
+        newIndexToOldIndexMap[i] = 0
+
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i]
         if (patched >= toBePatched) {
@@ -190,14 +200,50 @@ export function createRenderer(options: any) {
           }
         }
 
-        // 不存在
+        // 不存在的节点 -> 删除
         if (newIndex === undefined) {
           hostRemove(prevChild.el)
         }
-        // 存在
+        // 存在的节点  -> 移动/不变
         else {
+          newIndexToOldIndexMap[newIndex - s2] = i + 1 // +1 防止出现i为0的情况 -> 0 被视为老节点不存在
+
+          // 如果 newIndex 一直为升序，则说明节点没有移动
+          if (newIndex >= maxNewIndexSoFar)
+            maxNewIndexSoFar = newIndex
+          else
+            moved = true
+
           patch(prevChild, c2[newIndex], container, parentComponent, null)
           patched++
+        }
+      }
+
+      // console.log('原序列', newIndexToOldIndexMap) // [5, 3, 4]
+      const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : []
+      // console.log('递增子序列', increasingNewIndexSequence) // [1, 2] (索引位置)
+
+      // 在最长递增子序列里查找原序列对应索引是否有变动 (倒序查找，锁定 anchor)
+      let j = increasingNewIndexSequence.length - 1
+      for (let i = toBePatched - 1; i >= 0; i--) {
+        const nextIndex = i + s2
+        const nextChild = c2[nextIndex]
+        const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null
+
+        // 需要重新创建的节点
+        if (newIndexToOldIndexMap[i] === 0) {
+          patch(null, nextChild, container, parentComponent, anchor)
+        }
+        // 需要移动的节点
+        else if (moved) {
+        // j < 0 => 最长递增子序列已经查找完，剩下节点全部需要移动
+          if (j < 0 || i !== increasingNewIndexSequence[j]) {
+            // console.log('移动位置')
+            hostInsert(nextChild.el, container, anchor)
+          }
+          else {
+            j--
+          }
         }
       }
     }
@@ -303,4 +349,45 @@ export function createRenderer(options: any) {
   return {
     createApp: createAppAPI(render),
   }
+}
+
+function getSequence(arr: any[]) {
+  const p = arr.slice()
+  const result = [0]
+  let i, j, u, v, c
+  const len = arr.length
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i]
+    if (arrI !== 0) {
+      j = result[result.length - 1]
+      if (arr[j] < arrI) {
+        p[i] = j
+        result.push(i)
+        continue
+      }
+      u = 0
+      v = result.length - 1
+      while (u < v) {
+        c = (u + v) >> 1
+        if (arr[result[c]] < arrI)
+          u = c + 1
+
+        else
+          v = c
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0)
+          p[i] = result[u - 1]
+
+        result[u] = i
+      }
+    }
+  }
+  u = result.length
+  v = result[u - 1]
+  while (u-- > 0) {
+    result[u] = v
+    v = p[v]
+  }
+  return result
 }
