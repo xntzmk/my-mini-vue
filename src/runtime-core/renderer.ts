@@ -5,6 +5,7 @@ import { ShapeFlags } from '../shared/shapeFlags'
 import { createComponentInstance, setupComponent } from './component'
 import { shouldUpdateComponent } from './componentUpdateUtils'
 import { createAppAPI } from './createApp'
+import { queueJobs } from './scheduler'
 import { Fragment, Text } from './vnode'
 
 export function createRenderer(options: any) {
@@ -342,34 +343,40 @@ export function createRenderer(options: any) {
   }
 
   function setupRenderEffect(instance: any, initialVNode: any, container: any, anchor: any) {
-    instance.update = effect(() => {
-      if (!instance.isMounted) {
+    instance.update = effect(
+      () => {
+        if (!instance.isMounted) {
         /** 初始化 */
-        const { proxy } = instance
+          const { proxy } = instance
 
-        // 实例的 render 函数会触发响应式对象的 getter
-        const subTree = (instance.subTree = instance.render.apply(proxy)) // 存储节点树
+          // 实例的 render 函数会触发响应式对象的 getter
+          const subTree = (instance.subTree = instance.render.apply(proxy)) // 存储节点树
 
-        patch(null, subTree, container, instance, anchor)
-        initialVNode.el = subTree.el // 在所有的 subTree 初始化完成后，赋值 $el
-        instance.isMounted = true
-      }
-      else {
-        /** 更新 */
-        const { next, vnode } = instance
-        if (next) {
-          next.el = vnode.el
-          updateComponentPreRender(instance, next)
+          patch(null, subTree, container, instance, anchor)
+          initialVNode.el = subTree.el // 在所有的 subTree 初始化完成后，赋值 $el
+          instance.isMounted = true
         }
+        else {
+        /** 更新 */
+          const { next, vnode } = instance
+          if (next) {
+            next.el = vnode.el
+            updateComponentPreRender(instance, next)
+          }
 
-        const { proxy } = instance
-        const subTree = instance.render.apply(proxy)
-        const prevSubTree = instance.subTree
-        instance.subTree = subTree // 更新 subTree
+          const { proxy } = instance
+          const subTree = instance.render.apply(proxy)
+          const prevSubTree = instance.subTree
+          instance.subTree = subTree // 更新 subTree
 
-        patch(prevSubTree, subTree, container, instance, anchor)
-      }
-    })
+          patch(prevSubTree, subTree, container, instance, anchor)
+        }
+      },
+      {
+        scheduler() {
+          queueJobs(instance.update)
+        },
+      })
   }
 
   // 更新 vnode 和 组件属性/插槽等
