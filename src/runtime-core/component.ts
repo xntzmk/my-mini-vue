@@ -13,6 +13,8 @@ export function createComponentInstance(vnode: any, parent: any) {
     setupState: {}, // 存储 setup 函数的返回值
     props: {},
     slots: {},
+    component: null,
+    next: null, // 下一次要更新的虚拟节点
     provides: parent ? parent.provides : {}, // 先赋值为父级的 provides, 方便初始化原型时进行判断
     parent,
     subTree: {}, // 存储上一次的虚拟树

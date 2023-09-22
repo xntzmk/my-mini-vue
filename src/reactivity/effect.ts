@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
-
 import { extend } from '../shared'
 
 let activeEffect: any
