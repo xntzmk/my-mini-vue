@@ -8,13 +8,13 @@ const enum TagType {
 export function baseParse(content: string) {
   const context = createParserContext(content) // 引入全局上下文
 
-  return createRoot(parseChildren(context, ''))
+  return createRoot(parseChildren(context, []))
 }
 
-function parseChildren(context: any, parentTag: any) {
+function parseChildren(context: any, ancestors: any) {
   const nodes = []
 
-  while (!isEnd(context, parentTag)) {
+  while (!isEnd(context, ancestors)) {
     const s = context.source
     let node
     // 解析插值
@@ -24,7 +24,7 @@ function parseChildren(context: any, parentTag: any) {
     // 解析元素
     else if (s[0] === '<') {
       if (/[a-z]/i.test(s[1]))
-        node = parseElement(context)
+        node = parseElement(context, ancestors)
     }
 
     if (!node)
@@ -36,12 +36,16 @@ function parseChildren(context: any, parentTag: any) {
   return nodes
 }
 
-function isEnd(context: any, parentTag: any) {
+function isEnd(context: any, ancestors: any) {
   const s = context.source
-
-  // 1. 遇到结束标签
-  if (parentTag && s.startsWith(`</${parentTag}>`))
-    return true
+  // 1. 在栈中查找对应tag
+  if (s.startsWith('</')) {
+    for (let i = ancestors.length - 1; i >= 0; i--) {
+      const tag = ancestors[i].tag
+      if (startWithEndTagOpen(s, tag))
+        return true
+    }
+  }
 
   // 2. source 有值
   return !s
@@ -49,12 +53,15 @@ function isEnd(context: any, parentTag: any) {
 
 function parseText(context: any) {
   const s = context.source
-  const endToken = '{{'
+  const endToken = ['<', '{{']
 
   let endIndex = s.length
-  const index = s.indexOf(endToken)
-  if (index !== -1)
-    endIndex = index
+
+  for (let i = 0; i < endToken.length; i++) {
+    const index = s.indexOf(endToken[i])
+    if (index !== -1 && endIndex > index)
+      endIndex = index
+  }
 
   const content = parseTextData(context, endIndex)
   return {
@@ -70,13 +77,23 @@ function parseTextData(context: any, length: number): any {
   return content
 }
 
-function parseElement(context: any) {
+function parseElement(context: any, ancestors: any) {
   const element: any = parseTag(context, TagType.Start)
-  element.children = parseChildren(context, element.tag)
 
-  parseTag(context, TagType.End)
+  ancestors.push(element)
+  element.children = parseChildren(context, ancestors)
+  ancestors.pop()
+
+  if (startWithEndTagOpen(context.source, element.tag))
+    parseTag(context, TagType.End) // 推进尾部标签
+  else
+    throw new Error(`lack the end tag: ${element.tag}`)
 
   return element
+}
+
+function startWithEndTagOpen(source: any, tag: any) {
+  return source.startsWith('</') && source.slice(2, 2 + tag.length).toLowerCase() === tag.toLowerCase()
 }
 
 function parseTag(context: any, type: TagType) {
