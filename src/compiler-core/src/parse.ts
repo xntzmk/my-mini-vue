@@ -8,35 +8,55 @@ const enum TagType {
 export function baseParse(content: string) {
   const context = createParserContext(content) // 引入全局上下文
 
-  return createRoot(parseChildren(context))
+  return createRoot(parseChildren(context, ''))
 }
 
-function parseChildren(context: any) {
+function parseChildren(context: any, parentTag: any) {
   const nodes = []
 
-  const s = context.source
-  let node
+  while (!isEnd(context, parentTag)) {
+    const s = context.source
+    let node
+    // 解析插值
+    if (s.startsWith('{{')) {
+      node = parseInterpolation(context)
+    }
+    // 解析元素
+    else if (s[0] === '<') {
+      if (/[a-z]/i.test(s[1]))
+        node = parseElement(context)
+    }
 
-  // 解析插值
-  if (s.startsWith('{{')) {
-    node = parseInterpolation(context)
+    if (!node)
+      node = parseText(context)
+
+    nodes.push(node)
   }
-  // 解析元素
-  else if (s[0] === '<') {
-    if (/[a-z]/i.test(s[1]))
-      node = parseElement(context)
-  }
-
-  if (!node)
-    node = parseText(context)
-
-  nodes.push(node)
 
   return nodes
 }
 
+function isEnd(context: any, parentTag: any) {
+  const s = context.source
+
+  // 1. 遇到结束标签
+  if (parentTag && s.startsWith(`</${parentTag}>`))
+    return true
+
+  // 2. source 有值
+  return !s
+}
+
 function parseText(context: any) {
-  const content = parseTextData(context, context.source.length)
+  const s = context.source
+  const endToken = '{{'
+
+  let endIndex = s.length
+  const index = s.indexOf(endToken)
+  if (index !== -1)
+    endIndex = index
+
+  const content = parseTextData(context, endIndex)
   return {
     type: NodeTypes.TEXT,
     content,
@@ -51,7 +71,8 @@ function parseTextData(context: any, length: number): any {
 }
 
 function parseElement(context: any) {
-  const element = parseTag(context, TagType.Start)
+  const element: any = parseTag(context, TagType.Start)
+  element.children = parseChildren(context, element.tag)
 
   parseTag(context, TagType.End)
 
