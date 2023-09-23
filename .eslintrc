@@ -4,6 +4,7 @@
   ],
   "rules": {
     "no-console": "off",
-    "@typescript-eslint/no-this-alias": "off"
+    "@typescript-eslint/no-this-alias": "off",
+    "antfu/no-const-enum": "off"
   }
 }
