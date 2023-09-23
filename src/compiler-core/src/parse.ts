@@ -27,9 +27,27 @@ function parseChildren(context: any) {
       node = parseElement(context)
   }
 
+  if (!node)
+    node = parseText(context)
+
   nodes.push(node)
 
   return nodes
+}
+
+function parseText(context: any) {
+  const content = parseTextData(context, context.source.length)
+  return {
+    type: NodeTypes.TEXT,
+    content,
+  }
+}
+
+// 将 截取&推进 封装到一起
+function parseTextData(context: any, length: number): any {
+  const content = context.source.slice(0, length)
+  advanceBy(context, length)
+  return content
 }
 
 function parseElement(context: any) {
@@ -69,9 +87,9 @@ function parseInterpolation(context: any) {
 
   // 截取到字符后，根据字符长度再进行推进
   const rawContentLength = closeIndex - openDelimiter.length
-  const rawContent = context.source.slice(0, rawContentLength) // 获取到要截取的字符
+  const rawContent = parseTextData(context, rawContentLength) // 获取到要截取的字符
   const content = rawContent.trim()
-  advanceBy(context, rawContentLength + closeDelimiter.length)
+  advanceBy(context, closeDelimiter.length)
 
   return {
     type: NodeTypes.INTERPOLATION,
