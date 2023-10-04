@@ -7,6 +7,7 @@ export class ReactiveEffect {
   private _fn: any
   deps = []
   active = true
+  onStop?: () => void
 
   constructor(fn: any, public scheduler?: any) {
     this._fn = fn
@@ -53,8 +54,7 @@ export function effect(fn: any, options: any = {}) {
 }
 
 const targetMaps = new Map()
-export function track(target: any, key: any) {
-  // 提取不需要 track 的情况
+export function track(target: any, key: any) { // 提取不需要 track 的情况
   if (!isTracking())
     return
 
