@@ -4,28 +4,69 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-devDependencies:
-  '@antfu/eslint-config':
-    specifier: ^0.40.0
-    version: registry.npmmirror.com/@antfu/eslint-config@0.40.0(eslint@8.46.0)(typescript@5.1.6)
-  '@rollup/plugin-json':
-    specifier: ^6.0.0
-    version: registry.npmmirror.com/@rollup/plugin-json@6.0.0(rollup@3.28.0)
-  '@rollup/plugin-typescript':
-    specifier: ^11.1.2
-    version: registry.npmmirror.com/@rollup/plugin-typescript@11.1.2(rollup@3.28.0)(typescript@5.1.6)
-  eslint:
-    specifier: ^8.46.0
-    version: registry.npmmirror.com/eslint@8.46.0
-  rollup:
-    specifier: ^3.28.0
-    version: registry.npmmirror.com/rollup@3.28.0
-  typescript:
-    specifier: ^5.1.6
-    version: registry.npmmirror.com/typescript@5.1.6
-  vitest:
-    specifier: ^0.34.1
-    version: registry.npmmirror.com/vitest@0.34.1
+importers:
+
+  .:
+    devDependencies:
+      '@antfu/eslint-config':
+        specifier: ^0.40.0
+        version: registry.npmmirror.com/@antfu/eslint-config@0.40.0(eslint@8.46.0)(typescript@5.1.6)
+      '@rollup/plugin-json':
+        specifier: ^6.0.0
+        version: registry.npmmirror.com/@rollup/plugin-json@6.0.0(rollup@3.28.0)
+      '@rollup/plugin-typescript':
+        specifier: ^11.1.2
+        version: registry.npmmirror.com/@rollup/plugin-typescript@11.1.2(rollup@3.28.0)(typescript@5.1.6)
+      eslint:
+        specifier: ^8.46.0
+        version: registry.npmmirror.com/eslint@8.46.0
+      rollup:
+        specifier: ^3.28.0
+        version: registry.npmmirror.com/rollup@3.28.0
+      typescript:
+        specifier: ^5.1.6
+        version: registry.npmmirror.com/typescript@5.1.6
+      vitest:
+        specifier: ^0.34.1
+        version: registry.npmmirror.com/vitest@0.34.1
+
+  packages/compiler-core:
+    dependencies:
+      '@xntzmk-mini-vue/shared':
+        specifier: workspace:^
+        version: link:../shared
+
+  packages/reactivity:
+    dependencies:
+      '@xntzmk-mini-vue/shared':
+        specifier: workspace:^
+        version: link:../shared
+
+  packages/runtime-core:
+    dependencies:
+      '@xntzmk-mini-vue/reactivity':
+        specifier: workspace:^
+        version: link:../reactivity
+      '@xntzmk-mini-vue/shared':
+        specifier: workspace:^
+        version: link:../shared
+
+  packages/runtime-dom:
+    dependencies:
+      '@xntzmk-mini-vue/runtime-core':
+        specifier: workspace:^
+        version: link:../runtime-core
+
+  packages/shared: {}
+
+  packages/vue:
+    dependencies:
+      '@xntzmk-mini-vue/compiler-core':
+        specifier: workspace:^
+        version: link:../compiler-core
+      '@xntzmk-mini-vue/runtime-dom':
+        specifier: workspace:^
+        version: link:../runtime-dom
 
 packages:
 

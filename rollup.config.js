@@ -1,22 +1,19 @@
 import typescript from '@rollup/plugin-typescript'
-import pkg from './package.json' assert {type: 'json'}
 
 export default {
-  input: './src/index.ts',
+  input: './packages/vue/src/index.ts',
   output: [
     // 1. Commonjs
     {
       format: 'cjs',
-      file: pkg.main,
+      file: 'packages/vue/dist/xntzmk-mini-vue.cjs.js',
     },
     // 2. ESmodule
     {
       format: 'es',
-      file: pkg.module,
+      file: 'packages/vue/dist/xntzmk-mini-vue.esm.js',
     },
   ],
 
-  plugins: [
-    typescript(),
-  ],
+  plugins: [typescript()],
 }

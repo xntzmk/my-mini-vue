@@ -7,7 +7,7 @@
   "license": "ISC",
   "keywords": [],
   "main": "lib/my-mini-vue.cjs.js",
-  "module": "lib/my-mini-vue.esm.js",
+  "module": "lib/xntzmk-mini-vue.esm.js",
   "scripts": {
     "test": "vitest",
     "build": "rollup -c rollup.config.js"

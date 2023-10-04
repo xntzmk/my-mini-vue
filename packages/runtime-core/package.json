@@ -1,0 +1,16 @@
+{
+  "name": "@xntzmk-mini-vue/runtime-core",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@xntzmk-mini-vue/reactivity": "workspace:^",
+    "@xntzmk-mini-vue/shared": "workspace:^"
+  }
+}
