@@ -350,7 +350,7 @@ export function createRenderer(options: any) {
           const { proxy } = instance
 
           // 实例的 render 函数会触发响应式对象的 getter
-          const subTree = (instance.subTree = instance.render.apply(proxy)) // 存储节点树
+          const subTree = (instance.subTree = instance.render.apply(proxy, [proxy])) // 存储节点树
 
           patch(null, subTree, container, instance, anchor)
           initialVNode.el = subTree.el // 在所有的 subTree 初始化完成后，赋值 $el
@@ -365,7 +365,7 @@ export function createRenderer(options: any) {
           }
 
           const { proxy } = instance
-          const subTree = instance.render.apply(proxy)
+          const subTree = instance.render.apply(proxy, [proxy])
           const prevSubTree = instance.subTree
           instance.subTree = subTree // 更新 subTree
 

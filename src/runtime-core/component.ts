@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { shallowReadonly } from '../reactivity/reactive'
 import { proxyRefs } from '../reactivity/ref'
 import { isObject } from '../shared/index'
@@ -66,11 +67,16 @@ function handleSetupResult(instance: any, setupResult: any) {
   finishComponentSetup(instance)
 }
 
+// render 函数赋值
 function finishComponentSetup(instance: any) {
-  const component = instance.type
+  const Component = instance.type
 
-  if (component.render)
-    instance.render = component.render
+  if (compiler && !Component.render) {
+    if (Component.template)
+      Component.render = compiler(Component.template)
+  }
+
+  instance.render = Component.render
 }
 
 // currentInstance
@@ -80,4 +86,11 @@ export function getCurrentInstance() {
 }
 function setCurrentInstance(value: any) {
   currentInstance = value
+}
+
+// compiler
+let compiler: any
+
+export function registerRuntimeCompiler(_compiler: any) {
+  compiler = _compiler
 }
